@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>答えが出ないのは、AIのせいじゃない | AIを"相棒"にする人の考え方</title>
+
+  <style>
+    /* ============================================================
+       CSS変数：ライト（デフォルト）／ダーク
+       ============================================================ */
+    :root {
+      --accent:       #e8853a;
+      --accent-hover: #f0974a;
+      --accent-dim:   #b5622a;
+
+      --bg:        #fdf8f0;
+      --bg-card:   #ffffff;
+      --bg-card2:  #faf5ec;
+      --bg-hero:   #f5ede0;
+      --bg-nav:    rgba(253, 248, 240, 0.96);
+
+      --text:      #3a322c;
+      --text-sub:  #6b5744;
+      --text-mute: #b09c8a;
+
+      --border:    #ecdcc8;
+      --shadow:    0 2px 16px rgba(60, 30, 0, 0.07);
+
+      --bad-color: #c05050;
+      --bad-top:   #a04040;
+
+      --bg-card-bad:  #f5efec;
+      --bg-card-good: #fff8f2;
+
+      --btn-fg:    #ffffff;
+    }
+
+    [data-theme="dark"] {
+      --accent:       #c9a84c;
+      --accent-hover: #e0c068;
+      --accent-dim:   #a8862f;
+
+      --bg:        #0a0a0a;
+      --bg-card:   #1a1a1a;
+      --bg-card2:  #1f1f1f;
+      --bg-hero:   #111111;
+      --bg-nav:    rgba(10, 10, 10, 0.95);
+
+      --text:      #e0e0e0;
+      --text-sub:  #9a9a9a;
+      --text-mute: #6a6a6a;
+
+      --border:    #333333;
+      --shadow:    0 2px 16px rgba(0, 0, 0, 0.5);
+
+      --bad-color: #d47070;
+      --bad-top:   #8a4040;
+
+      --bg-card-bad:  #2a1a1a;
+      --bg-card-good: #1f1c14;
+
+      --btn-fg:    #0a0a0a;
+    }
+
+    /* ============================================================
+       リセット・ベース
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family:
+        -apple-system, BlinkMacSystemFont,
+        'Hiragino Kaku Gothic ProN', 'Hiragino Sans',
+        'Noto Sans JP', Meiryo, sans-serif;
+      font-size: 17px;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.9;
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ============================================================
+       レイアウト共通
+       ============================================================ */
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    .wide {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* ============================================================
+       ナビバー
+       ============================================================ */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: var(--bg-nav);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.25s ease;
+    }
+
+    .navbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 0.7rem 1.5rem;
+    }
+
+    .navbar-brand {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--accent);
+      white-space: nowrap;
+      letter-spacing: 0.01em;
+      flex-shrink: 0;
+    }
+
+    .navbar-brand small {
+      font-size: 0.7em;
+      opacity: 0.6;
+      font-weight: 400;
+    }
+
+    .navbar-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      list-style: none;
+      flex-wrap: wrap;
+    }
+
+    .navbar-links a {
+      font-size: 0.82rem;
+      color: var(--text-sub);
+      transition: color 0.15s;
+      white-space: nowrap;
+    }
+
+    .navbar-links a:hover {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .theme-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-sub);
+      border-radius: 20px;
+      padding: 0.28rem 0.85rem;
+      font-size: 0.78rem;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      font-family: inherit;
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .theme-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ============================================================
+       ヒーロー
+       ============================================================ */
+    .hero {
+      background: var(--bg-hero);
+      padding: 5.5rem 1.5rem 4.5rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.25rem;
+    }
+
+    .hero-title {
+      font-size: clamp(1.75rem, 5vw, 2.75rem);
+      font-weight: 800;
+      line-height: 1.25;
+      letter-spacing: -0.025em;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-sub {
+      font-size: clamp(0.95rem, 2vw, 1.1rem);
+      color: var(--text-sub);
+      max-width: 620px;
+      margin: 0 auto 2.75rem;
+      line-height: 2.1;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ボタン */
+    .btn-primary {
+      display: inline-block;
+      background: var(--accent);
+      color: var(--btn-fg);
+      font-weight: 700;
+      padding: 0.8rem 2rem;
+      border-radius: 24px;
+      font-size: 0.95rem;
+      transition: background 0.2s, transform 0.1s;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      text-decoration: none;
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      display: inline-block;
+      background: transparent;
+      color: var(--accent);
+      font-weight: 700;
+      padding: 0.8rem 2rem;
+      border-radius: 24px;
+      font-size: 0.95rem;
+      border: 1.5px solid var(--accent);
+      transition: background 0.2s, transform 0.1s;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .btn-outline:hover {
+      background: rgba(232, 133, 58, 0.1);
+      text-decoration: none;
+      transform: translateY(-1px);
+    }
+
+    /* ============================================================
+       セクション共通
+       ============================================================ */
+    .section {
+      padding: 5rem 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .section-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.6rem;
+    }
+
+    .section-title {
+      font-size: clamp(1.3rem, 3.5vw, 1.9rem);
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+      line-height: 1.4;
+    }
+
+    .section-lead {
+      font-size: 1rem;
+      color: var(--text-sub);
+      line-height: 2;
+      margin-bottom: 2.5rem;
+      max-width: 720px;
+    }
+
+    /* ============================================================
+       あるある例ボックス
+       ============================================================ */
+    .example-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
+      border-radius: 12px;
+      padding: 1.75rem 2rem;
+      box-shadow: var(--shadow);
+    }
+
+    .example-box-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .flow {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .flow-step {
+      background: var(--bg-card2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.32rem 0.75rem;
+      font-size: 0.845rem;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .flow-step.error {
+      border-color: var(--bad-color);
+      color: var(--bad-color);
+    }
+
+    .flow-arrow {
+      color: var(--text-mute);
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .example-comment {
+      font-size: 0.97rem;
+      color: var(--text-sub);
+      line-height: 2;
+    }
+
+    .hl { color: var(--accent); font-weight: 600; }
+
+    /* ============================================================
+       理由ボックス（Section 4 インフォパネル）
+       ============================================================ */
+    .info-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem 2rem;
+      box-shadow: var(--shadow);
+      font-size: 1rem;
+      color: var(--text-sub);
+      line-height: 2;
+    }
+
+    /* ============================================================
+       対比カード（Section 5）
+       ============================================================ */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .compare-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.75rem 1.75rem 2rem;
+      box-shadow: var(--shadow);
+    }
+
+    .compare-card.bad  {
+      background: var(--bg-card-bad);
+      border-top: 3px solid var(--bad-top);
+    }
+    .compare-card.good {
+      background: var(--bg-card-good);
+      border-top: 3px solid var(--accent);
+    }
+
+    .compare-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .compare-card.bad  .compare-title { color: var(--bad-color); }
+    .compare-card.good .compare-title { color: var(--accent); }
+
+    .compare-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .compare-list li {
+      font-size: 0.9rem;
+      color: var(--text-sub);
+      line-height: 1.7;
+      padding-left: 1.5rem;
+      position: relative;
+    }
+
+    .compare-card.bad  .compare-list li::before {
+      content: '✕';
+      position: absolute;
+      left: 0;
+      color: var(--bad-color);
+      font-size: 0.75rem;
+      top: 0.15em;
+    }
+
+    .compare-card.good .compare-list li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-size: 0.8rem;
+      top: 0.1em;
+    }
+
+    /* ============================================================
+       3ステップ（Section 6）
+       ============================================================ */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .step-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.75rem 2rem;
+      display: flex;
+      gap: 1.5rem;
+      align-items: flex-start;
+      box-shadow: var(--shadow);
+    }
+
+    .step-num {
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+      min-width: 1.75rem;
+      padding-top: 0.05rem;
+      flex-shrink: 0;
+    }
+
+    .step-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .step-desc {
+      font-size: 0.9rem;
+      color: var(--text-sub);
+      line-height: 1.9;
+    }
+
+    /* ============================================================
+       資料庫カードグリッド（Section 7）
+       ============================================================ */
+    .resource-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .resource-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.5rem 1.6rem 1.6rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+
+    .resource-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 24px rgba(232, 133, 58, 0.15);
+    }
+
+    .resource-card a {
+      display: contents;
+      color: inherit;
+    }
+
+    .resource-card a:hover { text-decoration: none; }
+
+    .rc-icon {
+      font-size: 1.6rem;
+      margin-bottom: 0.25rem;
+      line-height: 1;
+    }
+
+    .rc-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .rc-desc {
+      font-size: 0.875rem;
+      color: var(--text-sub);
+      line-height: 1.75;
+      flex: 1;
+    }
+
+    .rc-hint {
+      font-size: 0.72rem;
+      color: var(--accent);
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border);
+      line-height: 1.55;
+    }
+
+    /* ============================================================
+       仕組み化カード（Section 8）
+       ============================================================ */
+    .system-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .system-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.5rem 1.5rem;
+      box-shadow: var(--shadow);
+    }
+
+    .sc-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.6rem;
+      line-height: 1;
+    }
+
+    .sc-title {
+      font-size: 0.97rem;
+      font-weight: 700;
+      margin-bottom: 0.45rem;
+    }
+
+    .sc-desc {
+      font-size: 0.855rem;
+      color: var(--text-sub);
+      line-height: 1.8;
+    }
+
+    /* ============================================================
+       フッター
+       ============================================================ */
+    .footer {
+      background: var(--bg-hero);
+      border-top: 1px solid var(--border);
+      padding: 2.75rem 1.5rem;
+      text-align: center;
+    }
+
+    .footer-note {
+      font-size: 0.8rem;
+      color: var(--text-mute);
+      line-height: 2;
+    }
+
+    /* ============================================================
+       レスポンシブ
+       ============================================================ */
+    @media (max-width: 680px) {
+      .navbar-links { display: none; }
+
+      .hero { padding: 3.75rem 1.25rem 3.25rem; }
+
+      .hero-cta {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .hero-cta .btn-primary,
+      .hero-cta .btn-outline {
+        width: 100%;
+        max-width: 300px;
+        text-align: center;
+      }
+
+      .compare-grid { grid-template-columns: 1fr; }
+
+      .step-card {
+        flex-direction: column;
+        gap: 0.6rem;
+      }
+
+      .resource-grid { grid-template-columns: 1fr; }
+
+      .system-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 420px) {
+      .system-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+
+  <!--
+    FOUC防止スクリプト：ページレンダリング前にテーマを適用する。
+    インラインで実行することで、ちらつきを防ぐ。
+  -->
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('ebay-ai-portal-theme');
+        if (t === 'dark') {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+        /* ライトはデフォルト（属性なし）なので何もしない */
+      } catch (e) {}
+    })();
+  </script>
+</head>
+
+<body>
+
+  <!-- ============================================================
+       ナビバー
+       ============================================================ -->
+  <nav class="navbar" role="navigation" aria-label="メインナビゲーション">
+    <div class="navbar-inner">
+
+      <span class="navbar-brand">
+        答えが出ないのは、AIのせいじゃない
+      </span>
+
+      <ul class="navbar-links" aria-label="ページ内リンク">
+        <li><a href="#can">変わること</a></li>
+        <li><a href="#gap">もったいない</a></li>
+        <li><a href="#stance">3つの姿勢</a></li>
+        <li><a href="#mindset">向き合い方</a></li>
+        <li><a href="#how">解決の型</a></li>
+        <li><a href="#agent">上級編</a></li>
+        <li><a href="#resources">ツール</a></li>
+        <li><a href="#infra">仕組み化</a></li>
+      </ul>
+
+      <button class="theme-btn" id="themeToggle" aria-label="ライト／ダーク切替">
+        ☀️ ライト
+      </button>
+
+    </div>
+  </nav>
+
+  <!-- ============================================================
+       ヒーロー
+       ============================================================ -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="container">
+      <p class="hero-label">eBay出品者のためのAIガイド</p>
+      <h1 class="hero-title" id="hero-title">
+        答えが出ないのは、AIのせいじゃない。
+      </h1>
+      <p class="hero-sub">
+        —— AIを"相棒"にする人の考え方。<br>
+        リサーチも、翻訳も、エラー解決も……コツは、たった一つ——渡し方だけ。<br>
+        "もう使いこなしてる人"向けではありません。まだうまく使えていない人のための場所です。
+      </p>
+      <div class="hero-cta">
+        <!-- CTAリンク先はページ内セクションID。 -->
+        <a href="#can" class="btn-primary">AIで何ができるか見る</a>
+        <a href="#mindset" class="btn-outline">使い方を読む</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       #can：AIと組むと、こう変わる（アフター像・前向き）
+       ============================================================ -->
+  <section class="section" id="can" aria-labelledby="can-title">
+    <div class="container">
+      <p class="section-label">アフター像</p>
+      <h2 class="section-title" id="can-title">AIと組むと、こう変わる</h2>
+      <p class="section-lead">
+        「AIって、実際どう役に立つの？」まずは具体的なイメージから始めましょう。
+      </p>
+      <div class="resource-grid">
+
+        <div class="resource-card" style="cursor:default;">
+          <div class="rc-icon">🔎</div>
+          <p class="rc-title">リサーチが、一緒に速く進む</p>
+          <p class="rc-desc">
+            「この商品はいくらで売れるかな？」「似た商品の相場は？」——AIに状況を話しながら考えると、一人で調べるより何倍も速くヒントが見つかります。
+          </p>
+        </div>
+
+        <div class="resource-card" style="cursor:default;">
+          <div class="rc-icon">📝</div>
+          <p class="rc-title">出品データ作りが、一気に進む</p>
+          <p class="rc-desc">
+            日本語の商品情報をAIに渡すと、英語タイトル・説明文・Item Specificsの下書きを一気に仕上げてくれます。あとは確認して使うだけ。
+          </p>
+        </div>
+
+        <div class="resource-card" style="cursor:default;">
+          <div class="rc-icon">🛠️</div>
+          <p class="rc-title">エラーも「分からない」も、一緒に解決</p>
+          <p class="rc-desc">
+            エラー文やツールの説明をAIに渡すと、原因を一緒に切り分けてくれます。「何が起きているか」が見えてくるだけで、ぐっと楽になります。
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       #gap："できているつもり"が、一番もったいない
+       ============================================================ -->
+  <section class="section" id="gap" aria-labelledby="gap-title">
+    <div class="container">
+      <p class="section-label">落とし穴</p>
+      <h2 class="section-title" id="gap-title">"できているつもり"が、一番もったいない</h2>
+      <p class="section-lead">
+        AIは「それっぽい答え」を出すのがとても上手です。だから、答えが返ってきた瞬間に「できた」と思いがち。でも中身は"だいたい"かもしれません。
+      </p>
+
+      <div class="info-box" style="margin-bottom:2rem; text-align:center;">
+        <p style="font-size:1.25rem; font-weight:800; color:var(--text); line-height:1.6; margin-bottom:0.75rem;">
+          答えが返ってきた ≠ 正しい成果物
+        </p>
+        <p style="text-align:left;">
+          これを知っているかどうかで、AIの活かし方がまるで変わります。答えを受け取ったら、必ず確かめる習慣を持ちましょう。
+        </p>
+      </div>
+
+      <div class="example-box">
+        <p class="example-box-label">もったいない例</p>
+        <div class="flow" role="list" aria-label="作業フロー例">
+          <span class="flow-step" role="listitem">一括シートで翻訳</span>
+          <span class="flow-arrow" aria-hidden="true">→</span>
+          <span class="flow-step" role="listitem">出品ツールにインポート</span>
+          <span class="flow-arrow" aria-hidden="true">→</span>
+          <span class="flow-step error" role="listitem">❌ エラーが出た</span>
+          <span class="flow-arrow" aria-hidden="true">→</span>
+          <span class="flow-step" role="listitem">AIに「なぜ？」と質問</span>
+          <span class="flow-arrow" aria-hidden="true">→</span>
+          <span class="flow-step error" role="listitem">「分かりませんでした」</span>
+        </div>
+        <p class="example-comment">
+          これ、<span class="hl">AIが無能なのではありません。</span>必要な情報を渡していないだけです。<br>
+          「一括シートとは何か」「eBayの出品要件」「カテゴリIDの仕組み」「エラー文の全文」——これらを渡せば、同じ質問でも一気に解決に近づきます。<br>
+          地図を見せずに「この道で合ってますか？」と聞いているようなものです。渡す情報を変えるだけで、AIの返答は別物になります。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       #stance：ツールへの向き合い方——3つの姿勢
+       ============================================================ -->
+  <section class="section" id="stance" aria-labelledby="stance-title">
+    <div class="container">
+      <p class="section-label">姿勢</p>
+      <h2 class="section-title" id="stance-title">AIに向かうとき、あなたはどの姿勢ですか？</h2>
+      <p class="section-lead">
+        ツールの使い方より前に、ツールへの向き合い方そのものが成否を分けます。3つの姿勢を知っておきましょう。
+      </p>
+
+      <div class="steps" style="margin-bottom:2rem;">
+
+        <div class="step-card">
+          <div class="step-num" aria-hidden="true">①</div>
+          <div>
+            <p class="step-title">わかって使う <span style="color:var(--accent); font-weight:400; font-size:0.875rem;">◎ 理想</span></p>
+            <p class="step-desc">
+              仕組みを理解した上で使う。「なぜそう答えるのか」が分かっているから、出力のどこを信頼してどこを確かめるかが判断できます。目指す姿ではありますが、最初からここに来なくて構いません。
+            </p>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-num" aria-hidden="true">②</div>
+          <div>
+            <p class="step-title">わからないから聞く <span style="color:var(--accent); font-weight:400; font-size:0.875rem;">○ 安全・ここから伸びる</span></p>
+            <p class="step-desc">
+              「分からない」と正直に認めて、確かめながら使う。実はこれは悪くありません。むしろ良い姿勢です。「なぜこうなるんだろう」「合ってるかな」と疑いながら確かめることが、着実な成長につながります。恥ずかしがらなくていい。
+            </p>
+          </div>
+        </div>
+
+        <div class="step-card" style="border-top: 3px solid var(--bad-color);">
+          <div class="step-num" style="color:var(--bad-color);" aria-hidden="true">③</div>
+          <div>
+            <p class="step-title">わかったつもりで使う <span style="color:var(--bad-color); font-weight:400; font-size:0.875rem;">✕ 一番たちが悪い</span></p>
+            <p class="step-desc">
+              理解せずに「できてる」と思いながら使う。答えが返ってきたことで満足し、確かめない。出力の誤りに気づけない、トラブルの原因が分からない、気づいた時には収拾がつかない——③に入るとこの連鎖が起きます。
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="info-box">
+        <p style="font-weight:700; margin-bottom:0.75rem; color:var(--text);">「②は悪くない、むしろ良い。本当に危ないのは③」</p>
+        <p>
+          ②の人は「分からない」と認めているから、確かめます。そこから確実に成長できます。③の人は「分かった」と思い込んでいるから、確かめません。問題が起きても気づかず、気づいても原因を探せません。
+        </p>
+        <p style="margin-top:1rem;">
+          <strong>大人こそ、一段ずつを恥ずかしがらない。</strong><br>
+          子どもの頃は一つのことを成すために一段ずつ学んだのに、大人になると「そこはもう通った」と勝手に判断してスキップしてしまいがちです。どんな人でも、ある分野では初心者です。一段ずつ確かめながら進むことを、恥ずかしいとは思わないでください。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       #nature：AIのクセを知る
+       ============================================================ -->
+  <section class="section" id="nature" aria-labelledby="nature-title">
+    <div class="container">
+      <p class="section-label">AIの特性</p>
+      <h2 class="section-title" id="nature-title">AIのクセを知る：AIは"だいたい"で答える</h2>
+      <p class="section-lead">
+        AIは効率よく答えることを優先します。だから、いちいち調べ直さずに、手持ちの知識で"だいたい"埋めがちです。<br>
+        人間なら時間をかけて確認するところも、知識があるぶん調べずに済ませてしまう——これを知っているかで、成果物の精度がぐっと変わります。
+      </p>
+      <div class="steps">
+
+        <div class="step-card">
+          <div class="step-num" aria-hidden="true">①</div>
+          <div>
+            <p class="step-title">必要な情報・事実を先に渡す</p>
+            <p class="step-desc">
+              eBayの要件、使っているツールの説明、エラー文、対象の商品データ——AIが"知っているはず"ではなく、こちらから渡す。渡した情報だけが、AIにとっての世界です。
+            </p>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-num" aria-hidden="true">②</div>
+          <div>
+            <p class="step-title">「推測せず、調べてから答えて」と頼む</p>
+            <p class="step-desc">
+              「分からないなら分からないと言って」「推測で補わないで」と伝えるだけで、AIの答えの質が変わります。明示的に言わないと、AIは勝手に"それっぽい答え"で埋めてしまいます。
+            </p>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-num" aria-hidden="true">③</div>
+          <div>
+            <p class="step-title">出力を鵜呑みにせず、確かめる</p>
+            <p class="step-desc">
+              AIが答えを出したら、それで終わりではありません。大事なことは必ず裏付けを取る。特に数値・カテゴリID・eBayポリシーの解釈は、公式ページや実際の動作で確認しましょう。
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       #mindset：AIとの向き合い方（対比カード）
+       ============================================================ -->
+  <section class="section" id="mindset" aria-labelledby="mindset-title">
+    <div class="container">
+      <p class="section-label">全員必読</p>
+      <h2 class="section-title" id="mindset-title">AIとの向き合い方</h2>
+      <p class="section-lead">
+        うまくいく人・いかない人の差は、頭の良さでも経験の長さでもありません。<br>
+        「AIをどんな存在として扱うか」、ただそれだけです。
+      </p>
+      <div class="compare-grid">
+
+        <div class="compare-card bad" role="region" aria-label="うまくいきにくいパターン">
+          <p class="compare-title">うまくいきにくいパターン</p>
+          <ul class="compare-list">
+            <li>AIは何でも知っていると思っている</li>
+            <li>うまくいかないのをAIのせいにする</li>
+            <li>情報を渡さず、質問だけ投げる</li>
+          </ul>
+        </div>
+
+        <div class="compare-card good" role="region" aria-label="うまくいくパターン">
+          <p class="compare-title">うまくいくパターン</p>
+          <ul class="compare-list">
+            <li>AIは一緒に考える相棒だと知っている</li>
+            <li>結果は渡した情報しだい（自責）</li>
+            <li>前提・状況・データを渡してから聞く</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="example-box" style="margin-top:2rem;">
+        <p class="example-box-label">「他責」で止まる / 「自責」で進む</p>
+        <div class="flow" role="list" aria-label="うまくいかない時の連鎖">
+          <span class="flow-step" role="listitem">できた気になる</span>
+          <span class="flow-arrow" aria-hidden="true">→</span>
+          <span class="flow-step" role="listitem">どんどん手を広げる</span>
+          <span class="flow-arrow" aria-hidden="true">→</span>
+          <span class="flow-step error" role="listitem">収拾がつかなくなる</span>
+          <span class="flow-arrow" aria-hidden="true">→</span>
+          <span class="flow-step error" role="listitem">「AIが悪い」「ツールが悪い」</span>
+        </div>
+        <p class="example-comment">
+          うまくいかない時に「AIのせい」にすると、そこで止まります。改善する方向が見えないからです。<br><br>
+          一方、<span class="hl">「何を渡していなかったか」「どこで確かめなかったか」</span>と自分に矢印を向けると、自分で立て直せます。<br><br>
+          <strong>自責は、自分で解決できる力そのものです。</strong>自分を責めることではなく、「解決の糸口は自分の行動にある」と考えること。その姿勢が、前に進む力になります。
+        </p>
+      </div>
+
+      <div class="info-box" style="margin-top:1.5rem; border-left:4px solid var(--accent);">
+        <p style="font-weight:700; margin-bottom:0.5rem; color:var(--text);">書き手から一言</p>
+        <p>
+          「自分は大丈夫」と思った瞬間に、③に入ります。書いている私自身も例外ではありません。だから確かめ続けています。<br>
+          失敗しないことが大切なのではなく、「失敗する前提で確かめる・情報を渡す・自分に矢印を向ける」——この姿勢こそが、うまく使い続けられる人とそうでない人の差だと思っています。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       #how：困ったときの型（3ステップ）
+       ============================================================ -->
+  <section class="section" id="how" aria-labelledby="how-title">
+    <div class="container">
+      <p class="section-label">実践</p>
+      <h2 class="section-title" id="how-title">困ったときの型（3ステップ）</h2>
+      <p class="section-lead">
+        問題が起きたとき、まずこの順番で動いてみてください。
+      </p>
+      <div class="steps">
+
+        <div class="step-card">
+          <div class="step-num" aria-hidden="true">①</div>
+          <div>
+            <p class="step-title">何を「見る」か、まず確認する</p>
+            <p class="step-desc">
+              エラーの全文をコピーする。どの工程で起きたかを確認する（翻訳後なのか、インポート時なのか）。対象の商品データ（行）を手元に残す。
+            </p>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-num" aria-hidden="true">②</div>
+          <div>
+            <p class="step-title">何を「渡す」か、そろえてから聞く</p>
+            <p class="step-desc">
+              使っているツールの説明ページURL（この拠点の該当カード）。eBayの要件・カテゴリ情報。対象の行データ（タイトル・カテゴリID・Item Specificsなど）。エラーの全文。これらをまとめてからAIに渡すと、答えの質が激変します。
+            </p>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-num" aria-hidden="true">③</div>
+          <div>
+            <p class="step-title">確認が済むまでデータを「消さない」</p>
+            <p class="step-desc">
+              解決前に元データを消したり上書きしたりすると、再現できなくなります。AIと一緒に確認が取れるまで、元の行・エラー文・スクリーンショットは保持してください。
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       #agent：エージェントAI（強力。でも、分かってから）
+       ============================================================ -->
+  <section class="section" id="agent" aria-labelledby="agent-title">
+    <div class="container">
+      <p class="section-label">上級編</p>
+      <h2 class="section-title" id="agent-title">その先：エージェントAI（強力。でも、分かってから）</h2>
+      <p class="section-lead">
+        AIを使いこなせてきたら、次のステップとして「エージェントAI」があります。複雑な手順をまるごと自動でこなしてくれる、強力な道具です。普通のAI問題解決との違いをまず知っておきましょう。
+      </p>
+
+      <!-- 比較表 -->
+      <div style="overflow-x:auto; margin-bottom:2rem;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.9rem; background:var(--bg-card); border-radius:12px; overflow:hidden; border:1px solid var(--border); box-shadow:var(--shadow);">
+          <thead>
+            <tr style="border-bottom:2px solid var(--border);">
+              <th style="padding:1rem 1.25rem; text-align:left; color:var(--accent); font-size:0.875rem; width:50%; font-weight:700;">通常のAI問題解決（あなたが主導）</th>
+              <th style="padding:1rem 1.25rem; text-align:left; color:var(--accent); font-size:0.875rem; width:50%; font-weight:700;">エージェントAI（AIが自律実行）</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--border);">
+              <td style="padding:0.875rem 1.25rem; color:var(--text-sub); vertical-align:top; line-height:1.75;">対話しながら、目の前の詰まりを一緒に解く。</td>
+              <td style="padding:0.875rem 1.25rem; color:var(--text-sub); vertical-align:top; line-height:1.75;">AIが手順を組んで最後まで自動実行。あなたはゴールと条件を渡し、結果を検証する。</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border);">
+              <td style="padding:0.875rem 1.25rem; color:var(--text-sub); vertical-align:top; line-height:1.75;">1問1答。途中で方向を変えられる。</td>
+              <td style="padding:0.875rem 1.25rem; color:var(--text-sub); vertical-align:top; line-height:1.75;">人の確認を待たず、最後まで動く。</td>
+            </tr>
+            <tr>
+              <td style="padding:0.875rem 1.25rem; color:var(--text-sub); vertical-align:top; line-height:1.75;">土台ができていなくても使い始められる。</td>
+              <td style="padding:0.875rem 1.25rem; color:var(--text-sub); vertical-align:top; line-height:1.75;">渡す力と検証力が前提。上位の道具。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 警告ボックス -->
+      <div class="example-box">
+        <p class="example-box-label">使う前に知っておくこと</p>
+        <p class="example-comment">
+          エージェントAIは、人の確認を待たず最後まで実行します。分からないまま丸投げすると、取り返しのつかない操作（データ削除・誤った大量出品・外部への送信など）まで進めてしまうことがあります。<br><br>
+          eBayはアカウントや収入に直結するため、一つのミスが致命的になることも。<br><br>
+          <strong>エージェントAIは「丸投げの魔法」ではなく、「渡す力と検証を身につけた人が使う上位の道具」です。</strong><br>
+          具体的な使い方は、このページの土台——渡し方・確認・自責——ができてからの上級編として学びましょう。できた先に、この道具が待っています。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       #resources：資料庫（リファレンス）
+       ============================================================ -->
+  <section class="section" id="resources" aria-labelledby="resources-title">
+    <div class="wide">
+      <p class="section-label">ツール・ガイド</p>
+      <h2 class="section-title" id="resources-title">関連ツールと記事</h2>
+      <p class="section-lead">
+        一括シート・HSコード拡張・カテゴリー発見君など、eBay出品に使うツール群のガイドや関連記事はポートフォリオページにまとめています。困ったとき、各ページのURLをそのままAIに渡すと、AIがページ内容を読んで状況に合った回答をしてくれます。
+      </p>
+
+      <div class="resource-card" style="max-width:480px; cursor:default;">
+        <div class="rc-icon">🗂️</div>
+        <p class="rc-title">ツール・ガイド一覧</p>
+        <p class="rc-desc">
+          各ツールの説明・使い方・セットアップ手順をまとめたポートフォリオページです。各ページのURLをAIにそのまま渡すと、AIがページを読んで一緒に解決してくれます。
+        </p>
+        <p class="rc-hint">
+          <a href="https://naokijodan.github.io/portfolio/" target="_blank" rel="noopener noreferrer">ポートフォリオページを開く →</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       #infra：もっと先へ・仕組み化
+       ============================================================ -->
+  <section class="section" id="infra" aria-labelledby="infra-title">
+    <div class="container">
+      <p class="section-label">もっと先へ</p>
+      <h2 class="section-title" id="infra-title">仕組み化：「その都度渡す」から「常に渡る状態を作る」へ</h2>
+      <p class="section-lead">
+        毎回手動で情報を渡すのも大事ですが、慣れてきたら「AIが常に前提を知っている状態」を作れます。以下は、その第一歩になるツールや考え方です。
+      </p>
+      <div class="system-grid">
+
+        <div class="system-card">
+          <div class="sc-icon">📝</div>
+          <p class="sc-title">Obsidian（ノート）</p>
+          <p class="sc-desc">自分のオペレーション・ルール・決め事をノートに書いておく。AIに渡せる「自分マニュアル」になります。<br><a href="https://naokijodan.github.io/obsidian-guide/" target="_blank" rel="noopener noreferrer" style="font-size:0.82rem;">使い方ガイドを読む →</a></p>
+        </div>
+
+        <div class="system-card">
+          <div class="sc-icon">🐙</div>
+          <p class="sc-title">GitHub（公開して渡す）</p>
+          <p class="sc-desc">自分のルールやガイドをGitHubページで公開すると、URLひとつで渡せる状態になります。</p>
+        </div>
+
+        <div class="system-card">
+          <div class="sc-icon">⚙️</div>
+          <p class="sc-title">グローバルルール</p>
+          <p class="sc-desc">AIツールの「常時指示」にビジネスルールを書いておく。毎回説明しなくてよくなります。</p>
+        </div>
+
+        <div class="system-card">
+          <div class="sc-icon">🗒️</div>
+          <p class="sc-title">メモの蓄積</p>
+          <p class="sc-desc">解決できた問題・学んだことを一言メモしておく。次に似た問題が起きたとき、そのメモごと渡せます。</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- フッター -->
+  <footer class="footer">
+    <div class="container">
+      <p class="footer-note">
+        AIは、渡した情報の分だけ応えてくれます。
+      </p>
+    </div>
+  </footer>
+
+  <!-- ============================================================
+       テーマ切替スクリプト（インライン・外部依存ゼロ）
+       ============================================================ -->
+  <script>
+    (function () {
+      var KEY = 'ebay-ai-portal-theme';
+      var root = document.documentElement;
+      var btn  = document.getElementById('themeToggle');
+
+      function getTheme() {
+        try { return localStorage.getItem(KEY) || 'light'; } catch (e) { return 'light'; }
+      }
+
+      function applyTheme(t) {
+        if (t === 'dark') {
+          root.setAttribute('data-theme', 'dark');
+        } else {
+          root.removeAttribute('data-theme');
+        }
+        try { localStorage.setItem(KEY, t); } catch (e) {}
+        /* ボタンラベル：押すと切り替わる先を示す */
+        btn.textContent = t === 'dark' ? '☀️ ライト' : '🌙 ダーク';
+      }
+
+      /* ページ読込時にボタンラベルを初期化（FOUCスクリプトで属性は既に適用済み） */
+      applyTheme(getTheme());
+
+      btn.addEventListener('click', function () {
+        applyTheme(getTheme() === 'dark' ? 'light' : 'dark');
+      });
+    })();
+  </script>
+
+</body>
+</html>
